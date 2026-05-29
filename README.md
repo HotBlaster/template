@@ -182,7 +182,9 @@ typedef enum
 } bsp_adc_id_t;
 ```
 
-- **State-machine enums** and **bitmask enums** do **not** require a `_NUM` sentinel:
+- **State-machine enums** and **bitmask enums** do **not** require a `_NUM` sentinel.
+  However, a `_NUM` sentinel **is permitted** when the enum is also used as an
+  array dimension (e.g. for lookup tables indexed by state):
 
 ```c
 typedef enum
@@ -464,10 +466,14 @@ static inline bool_t Bsp_Flash_IsHwBusy(void)
 
 ### 14  Compiler and language standard
 
-- **C17** (`CMAKE_C_STANDARD 17`) with GNU extensions enabled.
+- **C23** (`CMAKE_C_STANDARD 23`) with GNU extensions enabled.
 - Compiler warnings: `-Wall -Wextra -Wconversion -Wswitch-enum -Wswitch-default`.
 - Optimisation: `-Og -g3` (debug-friendly optimisation in release builds).
 - `STATIC_ASSERT(cond, msg)` is available for compile-time checks (uses `_Static_assert` on C11+).
+- **Fixed-underlying-type enums** (`typedef enum : uint8_t { ... }`) are permitted
+  when the enum is module-private and constraining storage size is beneficial
+  (e.g. lookup-table indices, serialization tags). Public enums in headers should
+  use the plain `typedef enum { ... }` form for maximum portability.
 
 ---
 
